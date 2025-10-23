@@ -7,8 +7,7 @@ LOCAL_PORT="22"
 KEY="/oemapp/etc/ssh_rsa"
 
 while true; do
-    # Если уже есть процесс ssh -N с нашим форвардом — подождать и проверить снова
-    if ps | grep -q "[s]sh -N .* -R 0.0.0.0:${REMOTE_PORT}:localhost:${LOCAL_PORT}.*${VPS_HOST}"; then
+    if ps | grep -q "[s]sh -N .*${VPS_HOST}"; then
         sleep 10
         continue
     fi
@@ -21,8 +20,7 @@ while true; do
         -o ExitOnForwardFailure=yes \
         -o StrictHostKeyChecking=no \
         -R 0.0.0.0:${REMOTE_PORT}:localhost:${LOCAL_PORT} \
-        root@"$VPS_HOST"
+        root@"$VPS_HOST" >/dev/null 2>&1 &
 
-    # Если ssh завершился (обрыв), подождать и попробовать снова
-    sleep 5
+    sleep 10
 done
